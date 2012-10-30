@@ -1,0 +1,32 @@
+#!/bin/bash
+
+
+# default values:
+CONTROLLER=0
+VIRTUAL=0
+
+while getopts "c:v:" flag
+do
+    case $flag in
+        c ) CONTROLLER=$OPTARG;;
+        v ) VIRTUAL=$OPTARG;;
+        * ) usage
+      exit 0 ;;
+    esac
+
+
+done
+
+STATUS=$(/opt/dell/srvadmin/bin/omreport storage vdisk controller=$CONTROLLER vdisk=$VIRTUAL | grep Status | sed -e 's/Status.*:.\(.*\)/\1/g')
+
+echo "RAID $STATUS"
+
+# no warning, just critical right now
+if [ "$STATUS" == "Ok" ]; then
+
+        exit 0
+else
+        exit 2
+
+fi
+
